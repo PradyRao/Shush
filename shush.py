@@ -35,4 +35,8 @@ for filename in os.listdir('./Events'):
     if filename.endswith('.py'):
         client.load_extension(f'Events.{filename[:-3]}')
 
+for filename in os.listdir('./Tasks'):
+    if filename.endswith('.py'):
+        client.load_extension(f'Tasks.{filename[:-3]}')
+
 client.run(envdev.token)
