@@ -3,11 +3,11 @@ import logging
 
 from discord.ext import commands
 
-from Config import envdev
+from Config import env_dev
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix=envdev.botprefix)
+client = commands.Bot(command_prefix=env_dev.botprefix)
 
 @client.command()
 async def load(ctx, extension):
@@ -39,4 +39,4 @@ for filename in os.listdir('./Tasks'):
     if filename.endswith('.py'):
         client.load_extension(f'Tasks.{filename[:-3]}')
 
-client.run(envdev.token)
+client.run(env_dev.token)

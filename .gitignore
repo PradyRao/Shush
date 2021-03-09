@@ -5,8 +5,8 @@ __pycache__/
 
 #access classes
 Config
-Config/envdev.py
-Config/envprod.py
+Config/env_dev.py
+Config/env_prod.py
 
 # C extensions
 *.so
