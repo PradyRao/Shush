@@ -24,6 +24,7 @@ class VoiceStateUpdate(commands.Cog):
             user_leave(member, before, after)
 
 
+# we just have to check whether they're in a configued channel or not
 def user_join(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
     # if the channel which the user joined is NOT part of the channels that are handled by the bot
     if str(after.channel.id) not in var_config.appliedchs:
@@ -58,6 +59,7 @@ def user_move(member: discord.Member, before: discord.VoiceState, after: discord
     # same as user_leave
     elif str(before.channel.id) in var_config.appliedchs and str(after.channel.id) not in var_config.appliedchs:
         process_practice.process_leave_end(member, before, "leave")
+
 
 def setup(client):
     client.add_cog(VoiceStateUpdate(client))

@@ -54,7 +54,8 @@ def process_leave_end(member: discord.Member, voice_state: discord.VoiceState, s
     # this channel's excused key exists in practice map, and if the user that left was excused in the voice channel they were in
     elif str(voice_state.channel.id) + 'excused' in var_config.practicemap.keys() and \
             str(member.id) in var_config.practicemap[str(voice_state.channel.id) + 'excused']:
-        logging.log(level=logging.INFO, msg=f'excused user left. resetting from voice channel {voice_state.channel.name} id: {voice_state.channel.id}')
+        logging.log(level=logging.INFO, msg=f'excused user {member.name}#{member.discriminator} id:{member.id} left. resetting from voice channel {voice_state.channel.name} id:'
+                                            f' {voice_state.channel.id}')
 
         # we need to re-mute the member since they were excused
         # only if they moved to another configured voice channel
@@ -67,6 +68,7 @@ def process_leave_end(member: discord.Member, voice_state: discord.VoiceState, s
 
     # user is not practicing nor excused
     else:
+        logging.log(level=logging.INFO, msg=f'user {member.name}#{member.discriminator} id:{member.id} left configured voice channel {voice_state.channel.name} id: {voice_state.channel.id}')
         # here all we have to check is whether user is leaving or moving to an unconfigured channel
         # already handled by state_type
         if state_type == "leave":

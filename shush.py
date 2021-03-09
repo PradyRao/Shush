@@ -7,12 +7,14 @@ from Config import env_dev
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix=env_dev.botprefix)
+client = commands.Bot(command_prefix=env_dev.bot_prefix)
+
 
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f'Commands.{extension}')
     logging.log(level=logging.INFO, msg=f'loaded commands from {extension}')
+
 
 @client.command()
 async def unload(ctx, extension):
@@ -20,12 +22,14 @@ async def unload(ctx, extension):
     logging.log(level=logging.INFO, msg=f'unloaded commands from {extension}')
     await ctx.send(f'unloaded commands from {extension}')
 
+
 @client.command()
 async def reload(ctx, extension):
     client.unload_extension(f'Commands.{extension}')
     client.load_extension(f'Commands.{extension}')
     logging.log(level=logging.INFO, msg=f'reloaded commands from {extension}')
     await ctx.send(f'{extension} reloaded')
+
 
 for filename in os.listdir('./Commands'):
     if filename.endswith('.py'):
