@@ -41,7 +41,7 @@ def user_join(member: discord.Member, before: discord.VoiceState, after: discord
 # if they leave, all that matters is whether the channel they were in previously was a configured channel
 def user_leave(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
     if str(before.channel.id) in var_config.appliedchs:
-        process_practice.process_leave_end(member, before, "leave")
+        process_practice.process_leave_end(member, before, 'leave')
 
 
 # this is a bit more complicated
@@ -49,7 +49,7 @@ def user_move(member: discord.Member, before: discord.VoiceState, after: discord
     # if the user moves from a configured channel to another configured channel
     # we need to process whether user was registered within practicemap and then mute
     if str(before.channel.id) in var_config.appliedchs and str(after.channel.id) in var_config.appliedchs:
-        process_practice.process_leave_end(member, before, "move")
+        process_practice.process_leave_end(member, before, 'move')
     # if the user moves from an unconfigured channel to a configured channel
     # user would previously not be using the bot functions anyways so we just directly mute
     elif str(before.channel.id) not in var_config.appliedchs and str(after.channel.id) in var_config.appliedchs:
@@ -58,7 +58,7 @@ def user_move(member: discord.Member, before: discord.VoiceState, after: discord
     # we need to process whether they were registered within practicemap and then un-mute
     # same as user_leave
     elif str(before.channel.id) in var_config.appliedchs and str(after.channel.id) not in var_config.appliedchs:
-        process_practice.process_leave_end(member, before, "leave")
+        process_practice.process_leave_end(member, before, 'leave')
 
 
 def setup(client):
