@@ -2,8 +2,8 @@ import logging
 
 import discord
 
-from Config import env_dev
-from Config import var_config
+from Config import var_config, env_dev
+from Framework import time_utils
 
 
 async def process_leave_end(member: discord.Member, voice_state: discord.VoiceState):
@@ -12,9 +12,10 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         # get text channel associated with the voice channel that user left from
         text_channel = voice_state.channel.guild.get_channel(int(var_config.broadcastchs[str(voice_state.channel.id)]))
 
-        # user's total time practiced - not implemented
+        # user's total time practiced
         logging.log(level=logging.INFO, msg=f'processing time practiced for {member.name}#{member.discriminator} id:{member.id}')
-        time_practiced = [0, 0, 0, 0]
+        time_practiced_seconds = time_utils.time_practiced_seconds(voice_state.channel.id)
+        time_practiced = time_utils.time_readable(time_practiced_seconds)
 
         # update user's time in the database and update server total time - not implemented
         logging.log(level=logging.INFO, msg=f'updating database entry for user {member.name}#{member.discriminator} id:{member.id}')
@@ -22,6 +23,7 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         # reset practicemap for this channel - part 1/2
         logging.log(level=logging.INFO, msg=f'resetting practice slot for channel {voice_state.channel.name} id: {voice_state.channel.id}')
         del var_config.practicemap[str(voice_state.channel.id)]
+        del var_config.practicemap[str(voice_state.channel.id) + 'start_time']
         if str(voice_state.channel.id) + 'piece' in var_config.practicemap.keys():
             del var_config.practicemap[str(voice_state.channel.id) + 'piece']
 
@@ -48,10 +50,10 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         logging.log(level=logging.INFO, msg=f'resetting bit rate and user limit for channel {voice_state.channel.name} id: {voice_state.channel.id}')
         await voice_state.channel.edit(bitrate=var_config.bit_tier[voice_state.channel.guild.premium_tier], user_limit=0)
 
-    # this channel's excused key exists in practice map, and if the user that left was excused in the voice channel they were in
+    # check if channel's excused key exists in practicemap, and if the user that left was excused in the voice channel they were in
     elif str(voice_state.channel.id) + 'excused' in var_config.practicemap.keys() and \
             str(member.id) in var_config.practicemap[str(voice_state.channel.id) + 'excused']:
-        logging.log(level=logging.INFO, msg=f'excused user {member.name}#{member.discriminator} id:{member.id} left. resetting from voice channel {voice_state.channel.name} id:'
+        logging.log(level=logging.INFO, msg=f'excused user {member.name}#{member.discriminator} id:{member.id} left. removing entry from voice channel {voice_state.channel.name} id:'
                                             f' {voice_state.channel.id}')
 
         # remove their entry from the excused list

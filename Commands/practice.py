@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from Config import var_config
-from Framework import process_practice
+from Framework import process_practice, time_utils
 
 
 class Practice(commands.Cog):
@@ -53,7 +53,7 @@ async def practice(ctx: discord.ext.commands.Context):
         logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} is now practicing in voice channel {ctx.author.voice.channel.name} id:'
                                             f' {ctx.author.voice.channel.id}')
         var_config.practicemap[str(ctx.author.voice.channel.id)] = str(ctx.author.id)
-        var_config.practicemap[str(ctx.author.voice.channel.id) + 'timer'] = ''  # to be implemented
+        var_config.practicemap[str(ctx.author.voice.channel.id) + 'start_time'] = time_utils.now_time()  # to be implemented
         await ctx.author.edit(mute=False)
         await ctx.reply('you are now practicing')
 
@@ -99,14 +99,15 @@ async def room_status(ctx: discord.ext.commands.Context):
     else:
         # get the current practicing user
         practicing_user = ctx.guild.get_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)]))
-        # get the current length of user's practice session - not implemented
-
+        # get the current length of user's practice session
+        time_practiced_seconds = time_utils.time_practiced_seconds(ctx.author.voice.channel.id)
+        time_practiced = time_utils.time_readable(time_practiced_seconds)
         # if practicing user has indicated what piece they are currently practicing, include it in the reply
         if str(ctx.author.voice.channel.id) + 'piece' in var_config.practicemap.keys():
-            await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {0} hours {0} minutes. '
+            await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {time_practiced[1]} hours {time_practiced[2]} minutes {time_practiced[3]} seconds. '
                       f'User is currently practicing: {var_config.practicemap[str(ctx.author.voice.channel.id) + "piece"]}')
         else:
-            await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {0} hours {0} minutes. ')
+            await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {time_practiced[1]} hours {time_practiced[2]} minutes {time_practiced[3]} seconds.')
 
 
 async def practice_piece(ctx: discord.ext.commands.Context, piece):
