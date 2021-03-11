@@ -55,14 +55,12 @@ async def user_move(member: discord.Member, before: discord.VoiceState, after: d
         # speeds up process - this just means that if user self muted or deafened or anything other move voice channels
         await member.edit(mute=True)
         await process_practice.process_leave_end(member, before)
-
     # if the user moves from an un-configured channel to a configured channel
     # user would previously not be using the bot functions anyways so we just directly mute
     elif str(before.channel.id) not in var_config.appliedchs and str(after.channel.id) in var_config.appliedchs:
         await member.edit(mute=True)
     # if the user moves from a configured channel to an un-configured channel
     # we need to process whether they were registered within practicemap and then un-mute
-    # same as user_leave
     elif str(before.channel.id) in var_config.appliedchs and str(after.channel.id) not in var_config.appliedchs:
         await member.edit(mute=False)
         await process_practice.process_leave_end(member, before)
