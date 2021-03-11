@@ -31,6 +31,12 @@ async def reload(ctx, extension):
     await ctx.send(f'{extension} reloaded')
 
 
+@client.command(aliases=["quit"])
+@commands.has_permissions(administrator=True)
+async def _close(ctx):
+    await client.close()
+
+
 for filename in os.listdir('./Commands'):
     if filename.endswith('.py'):
         client.load_extension(f'Commands.{filename[:-3]}')
