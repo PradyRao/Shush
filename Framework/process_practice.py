@@ -6,7 +6,7 @@ from Config import env_dev
 from Config import var_config
 
 
-async def process_leave_end(member: discord.Member, voice_state: discord.VoiceState, state_type: str):
+async def process_leave_end(member: discord.Member, voice_state: discord.VoiceState):
     # check if the user that left was previously practicing
     if str(voice_state.channel.id) in var_config.practicemap.keys() and var_config.practicemap[str(voice_state.channel.id)] == str(member.id):
         # get text channel associated with the voice channel that user left from
@@ -18,12 +18,6 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
 
         # update user's time in the database and update server total time - not implemented
         logging.log(level=logging.INFO, msg=f'updating database entry for user {member.name}#{member.discriminator} id:{member.id}')
-
-        # we need to re-mute the member since were practicing
-        # only if they move to a configured voice channel
-        # already handled by state_type
-        if state_type == 'move' or 'nomore':
-            await member.edit(mute=True)
 
         # reset practicemap for this channel - part 1/2
         logging.log(level=logging.INFO, msg=f'resetting practice slot for channel {voice_state.channel.name} id: {voice_state.channel.id}')
@@ -60,25 +54,10 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         logging.log(level=logging.INFO, msg=f'excused user {member.name}#{member.discriminator} id:{member.id} left. resetting from voice channel {voice_state.channel.name} id:'
                                             f' {voice_state.channel.id}')
 
-        # we need to re-mute the member since they were excused
-        # only if they moved to another configured voice channel
-        # already handled by state_type
-        if state_type == 'move':
-            await member.edit(mute=True)
-
         # remove their entry from the excused list
         var_config.practicemap[str(voice_state.channel.id) + 'excused'].remove(str(member.id))
 
     # user is not practicing nor excused
     else:
-        # logging.log(level=logging.INFO, msg=f'user {member.name}#{member.discriminator} id:{member.id} left configured voice channel {voice_state.channel.name} id: {voice_state.channel.id}')
-        # here all we have to check is whether user is leaving or moving to an un-configured channel
-        # already handled by state_type
-        # apparently this doesn't work because user will have already left by then
-        '''if state_type == 'leave':
-            await member.edit(mute=False)'''
-        # this is really not necessary because if they were not practicing or excused they would be muted already, but I'll keep it here anyways
-        '''if state_type == 'move':
-            await member.edit(mute=True)'''
         return
 

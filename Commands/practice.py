@@ -26,18 +26,18 @@ class Practice(commands.Cog):
 
     @commands.command(aliases=['status', 'np', 'room'])
     async def _room_status(self, ctx, *args):
-        await print('hurrdurr')
+        await room_status(ctx)
 
     @commands.command(aliases=['piece', 'song', 'content'])
     async def _practice_piece(self, ctx, *, args):
-        await print('hurrdurr')
+        await practice_piece(ctx, args)
 
 
 async def practice(ctx: discord.ext.commands.Context):
     # check if user executed this command whilst not in voice channel
-    if ctx.author.voice.channel is None:
+    if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
-    # check if user executed this command while being in an unconfigured voice channel
+    # check if user executed this command while being in an un-configured voice channel
     elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
         await ctx.reply('you are not in a configured voice channel')
     # check the voice channel is configured and
@@ -46,7 +46,7 @@ async def practice(ctx: discord.ext.commands.Context):
         await ctx.reply('this text channel does not correspond with your current voice channel')
     # check if someone is already practicing
     elif str(ctx.author.voice.channel.id) in var_config.practicemap.keys():
-        practicing_user = ctx.guild.fetch_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)]))
+        practicing_user = ctx.guild.get_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)]))
         await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} is already practicing in this channel')
     else:
         # create the user entry for their practice session
@@ -56,6 +56,8 @@ async def practice(ctx: discord.ext.commands.Context):
         var_config.practicemap[str(ctx.author.voice.channel.id) + 'timer'] = ''  # to be implemented
         await ctx.author.edit(mute=False)
         await ctx.reply('you are now practicing')
+
+        print(var_config.practicemap)
 
 
 async def end_session(ctx: discord.ext.commands.Context):
@@ -76,7 +78,8 @@ async def end_session(ctx: discord.ext.commands.Context):
         # process their practice time and end their session
         logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has ended their session in voice channel {ctx.author.voice.channel.name} id:'
                                             f' {ctx.author.voice.channel.id}')
-        await process_practice.process_leave_end(ctx.author, ctx.author.voice, "nomore")
+        await ctx.author.edit(mute=True)
+        await process_practice.process_leave_end(ctx.author, ctx.author.voice)
 
 
 async def room_status(ctx: discord.ext.commands.Context):
@@ -95,13 +98,13 @@ async def room_status(ctx: discord.ext.commands.Context):
         await ctx.reply('there is no one practicing in this voice channel')
     else:
         # get the current practicing user
-        practicing_user = ctx.guild.fetch_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)]))
+        practicing_user = ctx.guild.get_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)]))
         # get the current length of user's practice session - not implemented
 
         # if practicing user has indicated what piece they are currently practicing, include it in the reply
         if str(ctx.author.voice.channel.id) + 'piece' in var_config.practicemap.keys():
             await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {0} hours {0} minutes. '
-                      f'currently practicing {var_config.practicemap[str(ctx.author.voice.channel.id) + "piece"]}')
+                      f'User is currently practicing: {var_config.practicemap[str(ctx.author.voice.channel.id) + "piece"]}')
         else:
             await ctx.reply(f'{practicing_user.name}#{practicing_user.discriminator} has been practicing for {0} hours {0} minutes. ')
 
@@ -118,7 +121,7 @@ async def practice_piece(ctx: discord.ext.commands.Context, piece):
     elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
         await ctx.reply('this text channel does not correspond with your current voice channel')
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.practicemap.keys() or str(ctx.author.id) != ctx.guild.fetch_member(int(var_config.practicemap[str(ctx.author.voice.channel.id)])):
+    elif str(ctx.author.voice.channel.id) not in var_config.practicemap.keys() or var_config.practicemap[str(ctx.author.voice.channel.id)] != str(ctx.author.id):
         await ctx.reply('you are not practicing in this voice channel')
     else:
         # create/change the entry for user's current practice piece
