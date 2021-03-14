@@ -1,34 +1,26 @@
 import logging
-import re
 
 import discord
 from discord.ext import commands
 
 from Config import var_config
-from Framework import process_practice, time_utils
 
 
 class Excuse(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(aliases=['hi'])
-    async def _hi(self, ctx, *, args):
-        lis = re.findall(r'[0-9]+', args)
-        print(lis)
-
-    @commands.command(aliases=['excuse'])
-    async def _excuse(self, ctx, *, args):
+    @commands.command(aliases=['excuse', 'ex'])
+    async def _excuse(self, ctx, *args: commands.Greedy[discord.Member]):
         await excuse(ctx, args)
 
-    @commands.command(aliases=['unexcuse'])
-    async def _unexcuse(self, ctx, *, args):
+    @commands.command(aliases=['unexcuse', 'unex', 'ux'])
+    async def _unexcuse(self, ctx, *args: commands.Greedy[discord.Member]):
         await unexcuse(ctx, args)
 
 
 async def excuse(ctx: discord.ext.commands.Context, args):
-    perms = ctx.author.guild_permissions
-    ismod = perms.administrator or perms.manage_channels or perms.manage_roles or perms.manage_guild
+    ismod = ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_roles or ctx.author.guild_permissions.manage_guild
     # check if user executed this command whilst not in voice channel
     if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
@@ -47,11 +39,9 @@ async def excuse(ctx: discord.ext.commands.Context, args):
         if not args:
             await ctx.reply("you haven't specified anyone to excuse")
         else:
-            to_unmute = re.findall(r'[0-9]+', args)  # there is some checking we can do here where user puts in random numbers like $excuse 2389734
-            for user in to_unmute:
-                member = ctx.guild.get_member(int(user))
+            for member in args:
                 # check if mentioned user is a valid member of the guild and if they're in the voice chat
-                if (member is not None) and (member.id != ctx.author.id) and (member in ctx.author.voice.channel.members):
+                if (member.id != ctx.author.id) and (member in ctx.author.voice.channel.members):
                     logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to excuse member {member.name}#'
                                                         f'{member.discriminator} id: {member.id} in '
                                                         f'practice room'
@@ -67,8 +57,7 @@ async def excuse(ctx: discord.ext.commands.Context, args):
 
 
 async def unexcuse(ctx: discord.ext.commands.Context, args):
-    perms = ctx.author.guild_permissions
-    ismod = perms.administrator or perms.manage_channels or perms.manage_roles or perms.manage_guild
+    ismod = ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_roles or ctx.author.guild_permissions.manage_guild
     # check if user executed this command whilst not in voice channel
     if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
@@ -87,12 +76,9 @@ async def unexcuse(ctx: discord.ext.commands.Context, args):
         if not args:
             await ctx.reply("you haven't specified anyone to excuse")
         else:
-            to_mute = re.findall(r'[0-9]+', args)  # there is some checking we can do here where user puts in random numbers like $unexcuse 2389734
-            for user in to_mute:
-                member = ctx.guild.get_member(int(user))
+            for member in args:
                 # check if mentioned user is a valid member of the guild and if they're in the voice chat and if they're currently excused
-                if (member is not None) \
-                        and (member.id != ctx.author.id) \
+                if (member.id != ctx.author.id) \
                         and (member in ctx.author.voice.channel.members) \
                         and (str(ctx.author.voice.channel.id) + 'excused' in var_config.practicemap.keys()) \
                         and (member.id in var_config.practicemap[str(ctx.author.voice.channel.id) + 'excused']):

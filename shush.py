@@ -19,6 +19,10 @@ intents.guilds = True
 client = commands.Bot(command_prefix=env_dev.bot_prefix, intents=intents)
 
 
+@client.command(aliases=['hi'])
+async def _hi(ctx, *args: commands.Greedy[discord.Member]):
+    print(args)
+
 @client.command()
 @commands.has_permissions(administrator=True)
 async def load(ctx, extension):
