@@ -27,6 +27,8 @@ class Excuse(commands.Cog):
 
 
 async def excuse(ctx: discord.ext.commands.Context, args):
+    perms = ctx.author.guild_permissions
+    ismod = perms.administrator or perms.manage_channels or perms.manage_roles or perms.manage_guild
     # check if user executed this command whilst not in voice channel
     if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
@@ -38,8 +40,8 @@ async def excuse(ctx: discord.ext.commands.Context, args):
     elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
         await ctx.reply('this text channel does not correspond with your current voice channel')
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
-    elif (not ctx.author.guild_permissions.manage_roles) or (str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
-            ctx.author.id)):
+    elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
+            ctx.author.id))):
         await ctx.reply('you are not practicing in this voice channel')
     else:
         if not args:
@@ -49,8 +51,8 @@ async def excuse(ctx: discord.ext.commands.Context, args):
             for user in to_unmute:
                 member = ctx.guild.get_member(int(user))
                 # check if mentioned user is a valid member of the guild and if they're in the voice chat
-                if (member is not None) and (member in ctx.author.voice.channel.members):
-                    logging.log(level=logging.INFO, msg=f'practicing user {ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to excuse member {member.name}#'
+                if (member is not None) and (member.id != ctx.author.id) and (member in ctx.author.voice.channel.members):
+                    logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to excuse member {member.name}#'
                                                         f'{member.discriminator} id: {member.id} in '
                                                         f'practice room'
                                                         f' {ctx.author.voice.channel.name} id:'
@@ -65,6 +67,8 @@ async def excuse(ctx: discord.ext.commands.Context, args):
 
 
 async def unexcuse(ctx: discord.ext.commands.Context, args):
+    perms = ctx.author.guild_permissions
+    ismod = perms.administrator or perms.manage_channels or perms.manage_roles or perms.manage_guild
     # check if user executed this command whilst not in voice channel
     if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
@@ -75,9 +79,9 @@ async def unexcuse(ctx: discord.ext.commands.Context, args):
     # if the voice channel is corresponding to the text channel that the command was executed
     elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
         await ctx.reply('this text channel does not correspond with your current voice channel')
-    # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel
-    elif (not ctx.author.guild_permissions.manage_roles) or (str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
-            ctx.author.id)):
+    # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
+    elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
+            ctx.author.id))):
         await ctx.reply('you are not practicing in this voice channel')
     else:
         if not args:
@@ -88,10 +92,11 @@ async def unexcuse(ctx: discord.ext.commands.Context, args):
                 member = ctx.guild.get_member(int(user))
                 # check if mentioned user is a valid member of the guild and if they're in the voice chat and if they're currently excused
                 if (member is not None) \
+                        and (member.id != ctx.author.id) \
                         and (member in ctx.author.voice.channel.members) \
                         and (str(ctx.author.voice.channel.id) + 'excused' in var_config.practicemap.keys()) \
                         and (member.id in var_config.practicemap[str(ctx.author.voice.channel.id) + 'excused']):
-                    logging.log(level=logging.INFO, msg=f'practicing user {ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to un-excuse member {member.name}#'
+                    logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to un-excuse member {member.name}#'
                                                         f'{member.discriminator} id: {member.id} in '
                                                         f'practice room'
                                                         f' {ctx.author.voice.channel.name} id:'
