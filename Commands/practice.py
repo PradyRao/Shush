@@ -53,7 +53,7 @@ async def practice(ctx: discord.ext.commands.Context):
         logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} is now practicing in voice channel {ctx.author.voice.channel.name} id:'
                                             f' {ctx.author.voice.channel.id}')
         var_config.practicemap[str(ctx.author.voice.channel.id)] = str(ctx.author.id)
-        var_config.practicemap[str(ctx.author.voice.channel.id) + 'start_time'] = time_utils.now_time()  # to be implemented
+        var_config.practicemap[str(ctx.author.voice.channel.id) + 'start_time'] = time_utils.now_time()
         await ctx.author.edit(mute=False)
         await ctx.reply('you are now practicing')
 

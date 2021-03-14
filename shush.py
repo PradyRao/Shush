@@ -1,5 +1,6 @@
 import os
 import logging
+import typing
 
 import discord
 from discord.ext import commands
@@ -7,7 +8,6 @@ from discord.ext import commands
 from Config import env_dev
 
 logging.basicConfig(level=logging.INFO)
-
 
 intents = discord.Intents.default()
 intents.members = True
@@ -17,11 +17,13 @@ intents.messages = True
 intents.guilds = True
 
 client = commands.Bot(command_prefix=env_dev.bot_prefix, intents=intents)
+client.remove_command('help')
 
 
 @client.command(aliases=['hi'])
-async def _hi(ctx, *args: commands.Greedy[discord.Member]):
+async def _hi(ctx, args: typing.Optional[discord.Member] = None):
     print(args)
+
 
 @client.command()
 @commands.has_permissions(administrator=True)
