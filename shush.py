@@ -1,22 +1,33 @@
 import os
 import logging
 
+import discord
 from discord.ext import commands
 
 from Config import env_dev
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix=env_dev.bot_prefix)
+
+intents = discord.Intents.default()
+intents.members = True
+intents.typing = False
+intents.presences = False
+intents.messages = True
+intents.guilds = True
+
+client = commands.Bot(command_prefix=env_dev.bot_prefix, intents=intents)
 
 
 @client.command()
+@commands.has_permissions(administrator=True)
 async def load(ctx, extension):
     client.load_extension(f'Commands.{extension}')
     logging.log(level=logging.INFO, msg=f'loaded commands from {extension}')
 
 
 @client.command()
+@commands.has_permissions(administrator=True)
 async def unload(ctx, extension):
     client.unload_extension(f'Commands.{extension}')
     logging.log(level=logging.INFO, msg=f'unloaded commands from {extension}')
@@ -24,6 +35,7 @@ async def unload(ctx, extension):
 
 
 @client.command()
+@commands.has_permissions(administrator=True)
 async def reload(ctx, extension):
     client.unload_extension(f'Commands.{extension}')
     client.load_extension(f'Commands.{extension}')

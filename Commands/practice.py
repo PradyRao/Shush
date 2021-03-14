@@ -62,7 +62,7 @@ async def practice(ctx: discord.ext.commands.Context):
 
 async def end_session(ctx: discord.ext.commands.Context):
     # check if user executed this command whilst not in voice channel
-    if ctx.author.voice.channel is None:
+    if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
     # check if user executed this command while being in an un-configured voice channel
     elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
@@ -84,7 +84,7 @@ async def end_session(ctx: discord.ext.commands.Context):
 
 async def room_status(ctx: discord.ext.commands.Context):
     # check if user executed this command whilst not in voice channel
-    if ctx.author.voice.channel is None:
+    if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
     # check if user executed this command while being in an un-configured voice channel
     elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
@@ -112,7 +112,7 @@ async def room_status(ctx: discord.ext.commands.Context):
 
 async def practice_piece(ctx: discord.ext.commands.Context, piece):
     # check if user executed this command whilst not in voice channel
-    if ctx.author.voice.channel is None:
+    if ctx.author.voice is None:
         await ctx.reply('you are not currently in a voice channel')
     # check if user executed this command while being in an un-configured voice channel
     elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:

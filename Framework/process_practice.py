@@ -35,7 +35,7 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         # if this channel's excused key exists in practice map, and if the list value of that key is not empty
         if str(voice_state.channel.id) + 'excused' in var_config.practicemap.keys() and var_config.practicemap[str(voice_state.channel.id) + 'excused']:
             # get the list of all excused members
-            excused_members = var_config.practicemap[voice_state.channel.id + 'excused']
+            excused_members = var_config.practicemap[str(voice_state.channel.id) + 'excused']
             # for each user in that voice channel
             for user in voice_state.channel.members:
                 # if the user is excused, re-mute them
@@ -57,7 +57,7 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
                                             f' {voice_state.channel.id}')
 
         # remove their entry from the excused list
-        var_config.practicemap[str(voice_state.channel.id) + 'excused'].remove(str(member.id))
+        var_config.practicemap[str(voice_state.channel.id) + 'excused'].remove(member.id)
 
     # user is not practicing nor excused
     else:
