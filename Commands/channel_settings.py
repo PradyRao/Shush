@@ -36,7 +36,7 @@ async def set_bitrate(ctx, bitrate):
         await ctx.reply(f'bitrate setting must be in between 8 and {var_config.bit_tier[ctx.author.voice.channel.guild.premium_tier] / 1000}')
     else:
         await ctx.author.voice.channel.edit(bitrate=bitrate * 1000)
-        ctx.reply(f'bitrate for this channel has been set to {bitrate}')
+        await ctx.reply(f'bitrate for this channel has been set to {bitrate}')
     return
 
 
@@ -55,7 +55,7 @@ async def set_user_limit(ctx, user_limit):
         await ctx.reply('incorrect input, user limit has to be between 0 (no limit) or 99')
     else:
         await ctx.author.voice.channel.edit(user_limit=user_limit)
-        ctx.reply(f'user limit for this channel has been set to {user_limit}')
+        await ctx.reply(f'user limit for this channel has been set to {user_limit}')
     return
 
 

@@ -34,8 +34,6 @@ async def enable_channels(ctx, voice_channels, text_channel):
         var_config.broadcastchs[str(vc.id)] = str(text_channel.id)
         name_lis.append(vc.name)
     await ctx.reply(f"configured voice channels {str(name_lis).strip('[]')} to text channel {text_channel.name}")
-    print(var_config.appliedchs)
-    print(var_config.broadcastchs)
     return
 
 

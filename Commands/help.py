@@ -1,11 +1,11 @@
 import logging
 import typing
 
-
 import discord
 from discord.ext import commands
 
 from Config import var_config
+
 
 class Help(commands.Cog):
     def __init__(self, client):
@@ -38,14 +38,17 @@ async def help(ctx: discord.ext.commands.Context, bot_prefix, delay):
                                                          f'{bot_prefix}userlimit <value>', inline=False)
     embed.add_field(name=bot_prefix + 'scale', value=f'Gives you a random scale to practice. Usage: {bot_prefix}scale', inline=False)
     embed.add_field(name=bot_prefix + 'stats', value=f'Gets statistics of a user. Usage: {bot_prefix}stats or {bot_prefix}stats <user>', inline=False)
-    if(ismod):
+    if (ismod):
         embed.add_field(name=bot_prefix + 'forcepractice', value=f'For case by case scenarios when a mod wants to override someone to practice.', inline=False)
         embed.add_field(name=bot_prefix + 'forcestop', value=f'For case by case scenarios when a mod wants to override and end a practice session.', inline=False)
-        embed.add_field(name=bot_prefix + 'serverstats', value=f'Gets the server total statistics, accumulation of everyone\'s practice time for certain time intervals. Usage: {bot_prefix}serverStats', inline=False)
-        embed.add_field(name=bot_prefix + 'leaderboard', value=f'Get the overall leaderboard of individual practice times. Use with great caution, do not use it in public channels. Usage: {bot_prefix}leaderboard', inline=False)
-    if(isadmin):
-        embed.add_field(name=bot_prefix + 'enablechs', value=f'To enable new voicechats to the bot, or update existing voice chats with a new text chat. Usage: {bot_prefix}enablechs vcId1, vcId2, ..., '
-                                                             f'vcIdn, txtChId (Assigns vcId1 - vcIdn to txtChId).', inline=False)
+        embed.add_field(name=bot_prefix + 'serverstats',
+                        value=f'Gets the server total statistics, accumulation of everyone\'s practice time for certain time intervals. Usage: {bot_prefix}serverStats', inline=False)
+        embed.add_field(name=bot_prefix + 'leaderboard',
+                        value=f'Get the overall leaderboard of individual practice times. Use with great caution, do not use it in public channels. Usage: {bot_prefix}leaderboard', inline=False)
+    if (isadmin):
+        embed.add_field(name=bot_prefix + 'enablechs',
+                        value=f'To enable new voicechats to the bot, or update existing voice chats with a new text chat. Usage: {bot_prefix}enablechs vcId1, vcId2, ..., '
+                              f'vcIdn, txtChId (Assigns vcId1 - vcIdn to txtChId).', inline=False)
         embed.add_field(name=bot_prefix + 'disablechs', value=f'To disable existing voicechats from the bot. Usage: {bot_prefix}disablechs vcId1, vcId2, ..., vcIdn', inline=False)
         embed.add_field(name=bot_prefix + 'dcmembers', value=f'Disconnect all members in that channel category in which the bot is enabled', inline=False)
 
