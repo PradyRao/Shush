@@ -21,8 +21,11 @@ client.remove_command('help')
 
 
 @client.command(aliases=['hi'])
-async def _hi(ctx, args: typing.Optional[discord.Member] = None):
-    print(args)
+async def _hi(ctx, voice_channels: commands.Greedy[discord.VoiceChannel], *, text_channel: typing.Optional[discord.TextChannel]):
+    name_lis = []
+    for vc in voice_channels:
+        name_lis.append(vc.name)
+    await ctx.reply(f"configured voice channels {str(name_lis).strip('[]')} to {text_channel.name}")
 
 
 @client.command()

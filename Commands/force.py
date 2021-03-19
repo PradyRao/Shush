@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from Config import var_config
-from Framework import time_utils, process_practice
+from Framework import time_utils, process_practice, general_check
 
 
 class Force(commands.Cog):
@@ -24,15 +24,8 @@ class Force(commands.Cog):
 
 
 async def force_practice(ctx: discord.ext.commands.Context, user):
-    if ctx.author.voice is None:
-        await ctx.reply('you are not currently in a voice channel')
-    # check if user executed this command while being in an un-configured voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
-        await ctx.reply('you are not in a configured voice channel')
-    # check the voice channel is configured and
-    # if the voice channel is corresponding to the text channel that the command was executed
-    elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
-        await ctx.reply('this text channel does not correspond with your current voice channel')
+    if not await general_check.voice_channel_command_check(ctx):
+        return
     elif not user:
         await ctx.reply('you have not provided a user to force-practice')
     elif user not in ctx.author.voice.channel.members:
@@ -67,18 +60,12 @@ async def force_practice(ctx: discord.ext.commands.Context, user):
             var_config.practicemap[str(ctx.author.voice.channel.id) + 'start_time'] = time_utils.now_time()
             await user.edit(mute=False)
             await ctx.send(f'{user.name}#{user.discriminator} is now practicing by {ctx.author.name}#{ctx.author.discriminator}\'s request')
+    return
 
 
 async def force_stop(ctx: discord.ext.commands.Context, user):
-    if ctx.author.voice is None:
-        await ctx.reply('you are not currently in a voice channel')
-    # check if user executed this command while being in an un-configured voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
-        await ctx.reply('you are not in a configured voice channel')
-    # check the voice channel is configured and
-    # if the voice channel is corresponding to the text channel that the command was executed
-    elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
-        await ctx.reply('this text channel does not correspond with your current voice channel')
+    if not await general_check.voice_channel_command_check(ctx):
+        return
     elif not user:
         await ctx.reply('you have not provided a user to force-stop')
     elif user not in ctx.author.voice.channel.members:
@@ -93,6 +80,7 @@ async def force_stop(ctx: discord.ext.commands.Context, user):
                                             f' {ctx.author.voice.channel.id}')
         await process_practice.process_leave_end(user, user.voice)
         await ctx.send(f'{user.name}#{user.discriminator} has stopped practicing by {ctx.author.name}#{ctx.author.discriminator}\'s request')
+    return
 
 
 def setup(client):

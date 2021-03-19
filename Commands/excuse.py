@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from Config import var_config
+from Framework import general_check
 
 
 class Excuse(commands.Cog):
@@ -21,16 +22,8 @@ class Excuse(commands.Cog):
 
 async def excuse(ctx: discord.ext.commands.Context, args):
     ismod = ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_roles or ctx.author.guild_permissions.manage_guild
-    # check if user executed this command whilst not in voice channel
-    if ctx.author.voice is None:
-        await ctx.reply('you are not currently in a voice channel')
-    # check if user executed this command while being in an un-configured voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
-        await ctx.reply('you are not in a configured voice channel')
-    # check the voice channel is configured and
-    # if the voice channel is corresponding to the text channel that the command was executed
-    elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
-        await ctx.reply('this text channel does not correspond with your current voice channel')
+    if not await general_check.voice_channel_command_check(ctx):
+        return
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
     elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
             ctx.author.id))):
@@ -54,26 +47,19 @@ async def excuse(ctx: discord.ext.commands.Context, args):
                 # un-mute them
                 await member.edit(mute=False)
         await ctx.reply('valid mentioned members have been excused')
+    return
 
 
 async def unexcuse(ctx: discord.ext.commands.Context, args):
     ismod = ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_roles or ctx.author.guild_permissions.manage_guild
-    # check if user executed this command whilst not in voice channel
-    if ctx.author.voice is None:
-        await ctx.reply('you are not currently in a voice channel')
-    # check if user executed this command while being in an un-configured voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
-        await ctx.reply('you are not in a configured voice channel')
-    # check the voice channel is configured and
-    # if the voice channel is corresponding to the text channel that the command was executed
-    elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
-        await ctx.reply('this text channel does not correspond with your current voice channel')
+    if not await general_check.voice_channel_command_check(ctx):
+        return
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
     elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
             ctx.author.id))):
         await ctx.reply('you are not practicing in this voice channel')
     elif not args:
-        await ctx.reply("you haven't specified anyone to excuse")
+        await ctx.reply("you haven't specified anyone to un-excuse")
     else:
         for member in args:
             # check if mentioned user is a valid member of the guild and if they're in the voice chat and if they're currently excused
@@ -91,6 +77,7 @@ async def unexcuse(ctx: discord.ext.commands.Context, args):
                 # re-mute them
                 await member.edit(mute=True)
         await ctx.reply('valid mentioned members have been un-excused')
+    return
 
 
 def setup(client):
