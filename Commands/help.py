@@ -25,7 +25,7 @@ async def help(ctx: discord.ext.commands.Context, bot_prefix):
     embed.title = 'Shushbot help page'
     embed.description = 'Documentation available [here](https://shush-bot.firebaseapp.com/) \n Report bugs [here](https://forms.gle/A4mA6AYJQFdDm62N9) \n Click [here](' \
                         'https://discordapp.com/channels/690354771189825547/705344913319133184/705354040778948669) for optimal Discord audio settings '
-    embed.set_thumbnail(url='file://../Resources/IMG_1553.jpg')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/438392276981645325/822349903169716224/IMG_1553.jpg')
     embed.add_field(name=bot_prefix + 'practice', value=f'If your channel has no one practicing, this command will set you into practice mode')
     embed.add_field(name=bot_prefix + 'nomore', value='If you don\'t want to practice anymore, this command can be used to end your practice session')
     embed.add_field(name=bot_prefix + 'np', value=f'This command will make the bot tell you who is practicing.')
