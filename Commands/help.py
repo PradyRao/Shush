@@ -1,11 +1,7 @@
-import logging
 import typing
 
 import discord
 from discord.ext import commands
-
-from Config import var_config
-
 
 class Help(commands.Cog):
     def __init__(self, client):

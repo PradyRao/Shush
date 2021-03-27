@@ -1,12 +1,14 @@
+import sys
 import logging
 import typing
+import importlib
 
 import discord
 from discord.ext import commands
 
-from Config import var_config
 from Framework import time_utils, process_practice, general_check
 
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 class Force(commands.Cog):
     def __init__(self, client):
@@ -78,6 +80,7 @@ async def force_stop(ctx: discord.ext.commands.Context, user):
                                             f'practice room'
                                             f' {ctx.author.voice.channel.name} id:'
                                             f' {ctx.author.voice.channel.id}')
+        await user.edit(mute=True)
         await process_practice.process_leave_end(user, user.voice)
         await ctx.send(f'{user.name}#{user.discriminator} has stopped practicing by {ctx.author.name}#{ctx.author.discriminator}\'s request')
     return

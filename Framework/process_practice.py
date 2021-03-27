@@ -1,9 +1,13 @@
+import sys
 import logging
+import importlib
 
 import discord
 
-from Config import var_config, env_dev
 from Framework import time_utils
+
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
+env = importlib.__import__("Config.env_" + sys.argv[1], fromlist=("env_" + sys.argv[1]))
 
 
 async def process_leave_end(member: discord.Member, voice_state: discord.VoiceState):

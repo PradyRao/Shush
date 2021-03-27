@@ -1,6 +1,10 @@
+import sys
+import importlib
+
 from datetime import datetime, timedelta, timezone
 
-from Config import var_config
+
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
 def now_time():

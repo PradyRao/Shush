@@ -3,8 +3,6 @@ import logging
 import discord
 from discord.ext import commands
 
-from Config import env_dev
-
 
 class Startup(commands.Cog):
     def __init__(self, client):

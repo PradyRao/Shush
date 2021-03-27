@@ -1,12 +1,15 @@
+import sys
 import logging
 import typing
+import importlib
 
 import discord
 from discord.ext import commands
 
-from Config import var_config
 from Framework import process_practice, time_utils, general_check
 
+
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 class Practice(commands.Cog):
     def __init__(self, client):

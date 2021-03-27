@@ -1,6 +1,9 @@
+import sys
+import importlib
+
 import discord
 
-from Config import var_config
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
 # to eliminate code repetition, this check basically happens with most commands of this bot

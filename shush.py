@@ -1,11 +1,14 @@
+import sys
 import os
 import logging
 import typing
+import importlib
 
 import discord
 from discord.ext import commands
 
-from Config import env_dev
+
+env = importlib.__import__("Config.env_" + sys.argv[1], fromlist=("env_" + sys.argv[1]))
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +19,7 @@ intents.presences = False
 intents.messages = True
 intents.guilds = True
 
-client = commands.Bot(command_prefix=env_dev.bot_prefix, intents=intents)
+client = commands.Bot(command_prefix=env.bot_prefix, intents=intents)
 client.remove_command('help')
 
 
@@ -70,4 +73,4 @@ for filename in os.listdir('./Tasks'):
     if filename.endswith('.py'):
         client.load_extension(f'Tasks.{filename[:-3]}')
 
-client.run(env_dev.token)
+client.run(env.token)

@@ -1,10 +1,13 @@
+import sys
 import logging
+import importlib
 
 import discord
 from discord.ext import commands
 
-from Config import var_config
 from Framework import process_practice
+
+var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
 class VoiceStateUpdate(commands.Cog):
