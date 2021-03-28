@@ -4,7 +4,7 @@ import importlib
 
 import discord
 
-from Framework import time_utils
+from Framework import time_utils, mongo_utils
 
 var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 env = importlib.__import__("Config.env_" + sys.argv[1], fromlist=("env_" + sys.argv[1]))
@@ -23,6 +23,8 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
 
         # update user's time in the database and update server total time - not implemented
         logging.log(level=logging.INFO, msg=f'updating database entry for user {member.name}#{member.discriminator} id:{member.id}')
+        mongo_utils.update_user_record(var_config.practicemap[str(voice_state.channel.id)], time_practiced_seconds, var_config.practicemap[str(voice_state.channel.id) + 'piece'])
+        mongo_utils.update_server_record(str(voice_state.channel.guild.id), time_practiced_seconds)
 
         # reset practicemap for this channel - part 1/2
         logging.log(level=logging.INFO, msg=f'resetting practice slot for channel {voice_state.channel.name} id: {voice_state.channel.id}')

@@ -2,6 +2,7 @@ import sys
 import logging
 import importlib
 
+import pymongo
 from pymongo import MongoClient
 
 env = importlib.__import__("Config.env_" + sys.argv[1], fromlist=("env_" + sys.argv[1]))
@@ -31,13 +32,13 @@ def find_user_record(user_id: str):
     return user_stats.find_one({'userId': user_id})
 
 
-def find_server_record():
-    return server_stats.find_one({'identifier': 'serverStats'})
+def find_server_record(guild_id: str):
+    return server_stats.find_one({'guild_id': guild_id})
 
 
-def update_server_record(practice_time: int):
+def update_server_record(guild_id: str, practice_time: int):
     if practice_time is not None:
-        query = {'identifier': 'serverStats'}
+        query = {'guild_id': guild_id}
         pipeline = {
             '$inc': {
                 'practiceStats.dailyTotal': practice_time,
@@ -51,12 +52,12 @@ def update_server_record(practice_time: int):
         return
 
 
-def reset_server_practice_time(attribute: str):
-    query = {'identifier': 'serverStats'}
+def reset_server_practice_time(guild_id: str, attribute: str):
+    query = {'guild_id': guild_id}
     pipeline = {'$set': {f'practiceStats.{attribute}': 0}}
     server_stats.update_one(filter=query, update=pipeline, upsert=True)
     return
 
 
 def leaderboard():
-    return user_stats.find().sort({'info.practiceStats.totalTime': -1}).limit(10)
+    return user_stats.find().sort('info.practiceStats.totalTime', pymongo.DESCENDING).limit(10)
