@@ -3,6 +3,8 @@ import typing
 import discord
 from discord.ext import commands
 
+from Framework import time_utils
+
 class Help(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -19,6 +21,7 @@ async def help(ctx: discord.ext.commands.Context, bot_prefix, delay):
     embed = discord.Embed()
     embed.colour = 16357382
     embed.title = 'Shushbot help page'
+    embed.timestamp = time_utils.now_date()
     embed.description = 'Documentation available [here](https://shush-bot.firebaseapp.com/) \n Report bugs [here](https://forms.gle/A4mA6AYJQFdDm62N9) \n Click [here](' \
                         'https://discordapp.com/channels/690354771189825547/705344913319133184/705354040778948669) for optimal Discord audio settings '
     embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/693257204819689483/822353418839916544/IMG_1553.jpg')
@@ -49,6 +52,7 @@ async def help(ctx: discord.ext.commands.Context, bot_prefix, delay):
         embed.add_field(name=bot_prefix + 'dcmembers', value=f'Disconnect all members in that channel category in which the bot is enabled', inline=False)
 
     await(await ctx.reply(embed=embed)).delete(delay=delay)
+    return
 
 
 def setup(client):

@@ -7,7 +7,6 @@ import importlib
 import discord
 from discord.ext import commands
 
-
 env = importlib.__import__("Config.env_" + sys.argv[1], fromlist=("env_" + sys.argv[1]))
 
 logging.basicConfig(level=logging.INFO)

@@ -3,6 +3,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from Framework import mongo_utils
+
 
 class Startup(commands.Cog):
     def __init__(self, client):

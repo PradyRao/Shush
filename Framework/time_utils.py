@@ -3,7 +3,6 @@ import importlib
 
 from datetime import datetime, timedelta, timezone
 
-
 var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
@@ -11,6 +10,10 @@ def now_time():
     # This function just returns the current time
     # Timezone permanently set to UTC-5
     return int(datetime.now().astimezone(timezone(timedelta(hours=-5))).replace(microsecond=0).timestamp())
+
+
+def now_date():
+    return datetime.now().astimezone(timezone(timedelta(hours=-5))).replace(microsecond=0)
 
 
 def time_practiced_seconds(voice_channel_id):
@@ -25,4 +28,4 @@ def time_readable(seconds):
     minutes = seconds // 60
     seconds %= 60
 
-    return [days, hours, minutes, seconds]
+    return [int(days), int(hours), int(minutes), int(seconds)]
