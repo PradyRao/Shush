@@ -51,7 +51,10 @@ async def help(ctx: discord.ext.commands.Context, bot_prefix, delay):
         embed.add_field(name=bot_prefix + 'disablechs', value=f'To disable existing voicechats from the bot. Usage: {bot_prefix}disablechs vcId1, vcId2, ..., vcIdn', inline=False)
         embed.add_field(name=bot_prefix + 'dcmembers', value=f'Disconnect all members in that channel category in which the bot is enabled', inline=False)
 
-    await(await ctx.reply(embed=embed)).delete(delay=delay)
+    if ismod or isadmin:
+        await(await ctx.reply(embed=embed)).delete(delay=delay)
+    else:
+        await(await ctx.reply(embed=embed)).delete(delay=30)
     return
 
 

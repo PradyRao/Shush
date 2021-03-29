@@ -20,16 +20,22 @@ else:
     logging.log(level=logging.INFO, msg='Connected to Database and Collections')
 
 
-def update_user_record(user_id: str, practice_time: int, last_rep: str):
+def update_user_record(user_id: str, guild_id: str, practice_time: int, last_rep: str):
     if practice_time is not None:
-        query = {'userId': user_id}
+        query = {'userId': user_id, 'guild_id': guild_id}
         pipeline = {'$set': {'info.practiceStats.lastRep': last_rep, 'info.practiceStats.lastRepTime': practice_time}, '$inc': {'info.practiceStats.totalTime': practice_time}}
-        user_stats.update_one(filter=query, update=pipeline, upsert=True)
+        try:
+            user_stats.update_one(filter=query, update=pipeline, upsert=True)
+        except Exception as ex:
+            update_exception = {'MongoDB exception': f'{ex}'}
+            logging.log(level=logging.ERROR, msg=update_exception)
+        else:
+            logging.log(level=logging.INFO, msg=f'Successfully updated practice time in database for user {user_id} in guild {guild_id}')
     return
 
 
-def find_user_record(user_id: str):
-    return user_stats.find_one({'userId': user_id})
+def find_user_record(user_id: str, guild_id: str):
+    return user_stats.find_one({'userId': user_id, 'guild_id': guild_id})
 
 
 def find_server_record(guild_id: str):
@@ -59,5 +65,5 @@ def reset_server_practice_time(guild_id: str, attribute: str):
     return
 
 
-def leaderboard():
-    return user_stats.find().sort('info.practiceStats.totalTime', pymongo.DESCENDING).limit(10)
+def leaderboard(guild_id: str):
+    return user_stats.find({'guild_id': guild_id}).sort('info.practiceStats.totalTime', pymongo.DESCENDING).limit(10)

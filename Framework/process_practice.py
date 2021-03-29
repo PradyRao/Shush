@@ -21,9 +21,15 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         time_practiced_seconds = time_utils.time_practiced_seconds(voice_state.channel.id)
         time_practiced = time_utils.time_readable(time_practiced_seconds)
 
-        # update user's time in the database and update server total time - not implemented
+        # update user's time in the database and update server total time
         logging.log(level=logging.INFO, msg=f'updating database entry for user {member.name}#{member.discriminator} id:{member.id}')
-        mongo_utils.update_user_record(var_config.practicemap[str(voice_state.channel.id)], time_practiced_seconds, var_config.practicemap[str(voice_state.channel.id) + 'piece'])
+        if (str(voice_state.channel.id)+ 'piece') in var_config.practicemap.keys():
+            mongo_utils.update_user_record(var_config.practicemap[str(voice_state.channel.id)], str(voice_state.channel.guild.id), time_practiced_seconds,
+                                           var_config.practicemap[str(voice_state.channel.id) + 'piece'])
+        else:
+            mongo_utils.update_user_record(var_config.practicemap[str(voice_state.channel.id)], str(voice_state.channel.guild.id), time_practiced_seconds,
+                                           "None")
+
         mongo_utils.update_server_record(str(voice_state.channel.guild.id), time_practiced_seconds)
 
         # reset practicemap for this channel - part 1/2
@@ -34,7 +40,7 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
             del var_config.practicemap[str(voice_state.channel.id) + 'piece']
 
         await text_channel.send(content=f'{member.name}#{member.discriminator} practice session ended. they practiced '
-                                  f'for {time_practiced[1]} hours {time_practiced[2]} minutes and {time_practiced[3]} seconds')
+                                        f'for {time_practiced[1]} hours {time_practiced[2]} minutes and {time_practiced[3]} seconds')
 
         # remute all excused members
         logging.log(level=logging.INFO, msg=f'resetting all excused members in voice channel {voice_state.channel.name} id: {voice_state.channel.id}')
@@ -68,4 +74,3 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
     # user is not practicing nor excused
     else:
         return
-
