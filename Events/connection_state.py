@@ -35,6 +35,14 @@ class Startup(commands.Cog):
         logging.log(level=logging.INFO, msg=f'Initial loading of appliedchs, broadcastchs, practicemap finished for all guilds')
         # start the crons here (unless using the given tasks functionality)
 
+    @commands.Cog.listener()
+    async def on_disconnect(self):
+        logging.log(level=logging.INFO, msg=f'BOT HAS DISCONNECTED')
+
+    @commands.Cog.listener()
+    async def on_resumed(self):
+        logging.log(level=logging.INFO, msg=f'BOT SUCCESSFULLY RESUMED')
+
 
 def setup(client):
     client.add_cog(Startup(client))
