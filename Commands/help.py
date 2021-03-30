@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from Framework import time_utils
 
+
 class Help(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -14,6 +15,7 @@ class Help(commands.Cog):
         await help(ctx, self.client.command_prefix, delay)
 
 
+# override embed for the help command
 async def help(ctx: discord.ext.commands.Context, bot_prefix, delay):
     ismod = ctx.author.guild_permissions.manage_roles
     isadmin = ctx.author.guild_permissions.administrator

@@ -6,6 +6,8 @@ import importlib
 import discord
 from discord.ext import commands
 
+from Framework import mongo_utils
+
 var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
@@ -30,12 +32,15 @@ async def enable_channels(ctx, voice_channels, text_channel):
     if not (voice_channels or text_channel):
         await ctx.reply(f'invalid command use, please include at least one voice channel and text channel')
         return
-    # for each voice channels that was provided, add that to applied channels cache (and eventually mongo: unimplemented)
-    # and map each voice channel to the text channel that was provided in broadcast channels cache (and eventually mongo: unimplemented)
+    # for each voice channels that was provided, add that to applied channels cache and from mongo
+    # and map each voice channel to the text channel that was provided in broadcast channels cache and from mongo
     for vc in voice_channels:
-        var_config.appliedchs.append(str(vc.id))
-        var_config.broadcastchs[str(vc.id)] = str(text_channel.id)
+        var_config.appliedchs[str(ctx.guild.id)].append(str(vc.id))
+        var_config.broadcastchs[str(ctx.guild.id)][str(vc.id)] = str(text_channel.id)
         name_lis.append(vc.name)
+
+    # update configuration in mongo
+    mongo_utils.update_channel_configurations(str(ctx.guild.id), var_config.appliedchs[str(ctx.guild.id)], var_config.broadcastchs[str(ctx.guild.id)])
 
     logging.log(level=logging.INFO, msg=f"configured voice channels {str(name_lis).strip('[]')} to text channel {text_channel.name} in guild: {ctx.guild.id}")
 
@@ -50,13 +55,16 @@ async def disable_channels(ctx, voice_channels):
         await ctx.reply(f'invalid command use, please include at least one voice channel')
         return
 
-    # for each voice channels that was provided, remove it from applied channels cache (and eventually mongo: unimplemented)
-    # and remove each map entry that contains the channels to be removed as key in broadcast channels cache (and eventually mongo: unimplemented)
+    # for each voice channels that was provided, remove it from applied channels cache and from mongo
+    # and remove each map entry that contains the channels to be removed as key in broadcast channels cache and from mongo
     for vc in voice_channels:
-        if str(vc.id) in (var_config.appliedchs and var_config.broadcastchs.keys()):
-            var_config.appliedchs.remove(str(vc.id))
-            del var_config.broadcastchs[str(vc.id)]
+        if str(vc.id) in (var_config.appliedchs[str(ctx.guild.id)] and var_config.broadcastchs[str(ctx.guild.id)].keys()):
+            var_config.appliedchs[str(ctx.guild.id)].remove(str(vc.id))
+            del var_config.broadcastchs[str(ctx.guild.id)][str(vc.id)]
             name_lis.append(vc.name)
+
+    # update configuration in mongo
+    mongo_utils.update_channel_configurations(str(ctx.guild.id), var_config.appliedchs[str(ctx.guild.id)], var_config.broadcastchs[str(ctx.guild.id)])
 
     logging.log(level=logging.INFO, msg=f"removed voice channels {str(name_lis).strip('[]')} from configuration, they can no longer be used as practice rooms in guild: {ctx.guild.id}")
 

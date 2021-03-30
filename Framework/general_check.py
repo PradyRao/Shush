@@ -13,12 +13,12 @@ async def voice_channel_command_check(ctx: discord.ext.commands.Context) -> bool
         await ctx.reply('you are not currently in a voice channel')
         return False
     # check if user executed this command while being in an un-configured voice channel
-    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs:
+    elif str(ctx.author.voice.channel.id) not in var_config.appliedchs[str(ctx.guild.id)]:
         await ctx.reply('you are not in a configured voice channel')
         return False
     # check the voice channel is configured and
     # if the voice channel is corresponding to the text channel that the command was executed
-    elif str(ctx.author.voice.channel.id) in var_config.appliedchs and var_config.broadcastchs[str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
+    elif str(ctx.author.voice.channel.id) in var_config.appliedchs[str(ctx.guild.id)] and var_config.broadcastchs[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] != str(ctx.channel.id):
         await ctx.reply('this text channel does not correspond with your current voice channel')
         return False
     else:

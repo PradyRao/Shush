@@ -40,6 +40,7 @@ class Scales(commands.Cog):
         await get_random_scale(ctx)
 
 
+# randomly return one element from the above defined list
 async def get_random_scale(ctx):
     await ctx.reply(f'{random.choice(scaleList)}')
     return

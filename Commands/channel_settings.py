@@ -29,8 +29,9 @@ async def set_bitrate(ctx, bitrate):
     if not await general_check.voice_channel_command_check(ctx):
         return
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
-    elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
-            ctx.author.id))):
+    elif (not ismod) \
+            and ((str(ctx.author.voice.channel.id) not in var_config.practicemap[str(ctx.guild.id)].keys())
+                 or (var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] != str(ctx.author.id))):
         await ctx.reply('you are not practicing in this voice channel')
     elif not bitrate:
         await ctx.reply('incorrect command usage, you have not provided a bit rate to set for this channel')
@@ -48,8 +49,9 @@ async def set_user_limit(ctx, user_limit):
     if not await general_check.voice_channel_command_check(ctx):
         return
     # check if a user is practicing in the voice channel and if the user that executed the command is currently the one practicing in this voice channel, or a moderator
-    elif (not ismod) and ((str(ctx.author.voice.channel.id) not in var_config.practicemap.keys()) or (var_config.practicemap[str(ctx.author.voice.channel.id)] != str(
-            ctx.author.id))):
+    elif (not ismod) \
+            and ((str(ctx.author.voice.channel.id) not in var_config.practicemap[str(ctx.guild.id)].keys())
+                 or (var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] != str(ctx.author.id))):
         await ctx.reply('you are not practicing in this voice channel')
     elif not user_limit:
         await ctx.reply('incorrect command usage, you have not provided a user limit to set for this channel')
