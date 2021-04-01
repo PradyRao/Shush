@@ -37,7 +37,7 @@ async def excuse(ctx: discord.ext.commands.Context, args):
     else:
         for member in args:
             # check if mentioned user is a valid member of the guild and if they're in the voice chat
-            if (member.id != ctx.author.id) and (member in ctx.author.voice.channel.members):
+            if (ismod or member.id != ctx.author.id) and (member in ctx.author.voice.channel.members):
                 logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested to excuse member {member.name}#'
                                                     f'{member.discriminator} id: {member.id} in '
                                                     f'practice room'
@@ -68,7 +68,7 @@ async def unexcuse(ctx: discord.ext.commands.Context, args):
     else:
         for member in args:
             # check if mentioned user is a valid member of the guild and if they're in the voice chat and if they're currently excused
-            if (member.id != ctx.author.id) \
+            if (ismod or member.id != ctx.author.id) \
                     and (member in ctx.author.voice.channel.members) \
                     and (str(ctx.author.voice.channel.id) + 'excused' in var_config.practicemap[str(ctx.guild.id)].keys()) \
                     and (member.id in var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id) + 'excused']):

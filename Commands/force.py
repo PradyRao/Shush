@@ -10,6 +10,7 @@ from Framework import time_utils, process_practice, general_check
 
 var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
+
 class Force(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -54,9 +55,11 @@ async def force_practice(ctx: discord.ext.commands.Context, user):
                                                 f'practice room'
                                                 f' {ctx.author.voice.channel.name} id:'
                                                 f' {ctx.author.voice.channel.id}')
-            # find out who is practicing
+            # find out who is practicing, if there is someone practicing already - stop their practice session and mute them
             practicing_user = ctx.guild.get_member(int(var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)]))
-            await process_practice.process_leave_end(practicing_user, practicing_user.voice)
+            if practicing_user is not None:
+                await process_practice.process_leave_end(practicing_user, practicing_user.voice)
+                await practicing_user.edit(mute=True)
             # forced user's entry is now created in practicemap and user is un-muted
             var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] = str(user.id)
             var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id) + 'start_time'] = time_utils.now_time()
@@ -73,7 +76,7 @@ async def force_stop(ctx: discord.ext.commands.Context, user):
     elif user not in ctx.author.voice.channel.members:
         await ctx.reply(f'{user.name}#{user.discriminator} is not in your voice channel')
     elif (str(ctx.author.voice.channel.id) not in var_config.practicemap[str(ctx.guild.id)].keys()
-                 or var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] != str(user.id)):
+          or var_config.practicemap[str(ctx.guild.id)][str(ctx.author.voice.channel.id)] != str(user.id)):
         await ctx.reply(f'{user.name}#{user.discriminator} is not practicing in this voice channel')
     else:
         logging.log(level=logging.INFO, msg=f'{ctx.author.name}#{ctx.author.discriminator} id: {ctx.author.id} has requested force-stop member {user.name}#'

@@ -11,7 +11,7 @@ from Framework import mongo_utils, time_utils
 var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=("var_config_" + sys.argv[1]))
 
 
-class Scales(commands.Cog):
+class Stats(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -95,7 +95,10 @@ async def get_server_stats(ctx: discord.ext.commands.Context, stat_type):
     elif stat_type == 'yearly':
         embed.title = 'Yearly Practice Time'
         embed.add_field(name='Yearly Total', value=f'{yearly[0]}d {yearly[1]}h {yearly[2]}m {yearly[3]}s', inline=False)
-    else:
+    elif stat_type == 'grand':
+        embed.title = 'Grand Total Practice Time'
+        embed.add_field(name='Grand Total', value=f'{grand_total[0]}d {grand_total[1]}h {grand_total[2]}m {grand_total[3]}s', inline=False)
+    elif stat_type == 'all' or None:
         embed.title = 'Server Practice Time Totals'
         embed.add_field(name='Daily Total', value=f'{daily[1]}h {daily[2]}m {daily[3]}s', inline=False)
         embed.add_field(name='Weekly Total', value=f'{weekly[0]}d {weekly[1]}h {weekly[2]}m {weekly[3]}s', inline=False)
@@ -159,4 +162,4 @@ async def get_leaderboard(ctx: discord.ext.commands.Context):
 
 
 def setup(client):
-    client.add_cog(Scales(client))
+    client.add_cog(Stats(client))
