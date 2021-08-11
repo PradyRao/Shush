@@ -56,14 +56,16 @@ def find_server_record(guild_id: str):
 def update_user_record(user_id: str, guild_id: str, practice_time: int, last_rep: str):
     if practice_time is not None:
         query = {'userId': user_id, 'guild_id': guild_id}
-        pipeline = {'$set': {'info.practiceStats.lastRep': last_rep, 'info.practiceStats.lastRepTime': practice_time}, '$inc': {'info.practiceStats.totalTime': practice_time}}
+        pipeline = {'$set': {'info.practiceStats.lastRep': last_rep, 'info.practiceStats.lastRepTime': practice_time},
+                    '$inc': {'info.practiceStats.totalTime': practice_time}}
         try:
             user_stats_collection.update_one(filter=query, update=pipeline, upsert=True)
         except Exception as ex:
             update_exception = {'MongoDB exception': f'{ex}'}
             logging.log(level=logging.ERROR, msg=update_exception)
         else:
-            logging.log(level=logging.INFO, msg=f'Successfully updated practice time in database for user {user_id} in guild {guild_id}')
+            logging.log(level=logging.INFO,
+                        msg=f'Successfully updated practice time in database for user {user_id} in guild {guild_id}')
     return
 
 
@@ -105,11 +107,24 @@ def reset_server_practice_time(guild_id: str, attribute: str):
     return
 
 
+def reset_server_practice_time_batch(attribute: str):
+    pipeline = {'$set': {f'practiceStats.{attribute}': 0}}
+    try:
+        server_stats_collection.update_many(filter={}, update=pipeline, upsert=True)
+    except Exception as ex:
+        update_exception = {'MongoDB exception': f'{ex}'}
+        logging.log(level=logging.ERROR, msg=update_exception)
+    else:
+        logging.log(level=logging.INFO, msg=f'Successfully reset practice time for {attribute}')
+    return
+
+
 # return stats documents sorted in total practice time descending order and limit it to 10 records
 # returns the stats for users that have practiced the most in requested server
 def get_user_leaderboard(guild_id: str):
     try:
-        leaderboard = user_stats_collection.find({'guild_id': guild_id}).sort('info.practiceStats.totalTime', pymongo.DESCENDING).limit(10)
+        leaderboard = user_stats_collection.find({'guild_id': guild_id}).sort('info.practiceStats.totalTime',
+                                                                              pymongo.DESCENDING).limit(10)
     except Exception as ex:
         update_exception = {'MongoDB exception': f'{ex}'}
         logging.log(level=logging.ERROR, msg=update_exception)

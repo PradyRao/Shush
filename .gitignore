@@ -10,6 +10,9 @@ Config/env_prod.py
 Config/var_config_dev.py
 Config/var_config_prod.py
 
+*.idea/
+.idea/*
+
 # C extensions
 *.so
 

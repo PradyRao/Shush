@@ -12,9 +12,9 @@ var_config = importlib.__import__("Config.var_config_" + sys.argv[1], fromlist=(
 class Initialize(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.client.loop.create_task(self._initialize_cache())
+        self.client.loop.create_task(self._initialize_startup())
 
-    async def _initialize_cache(self):
+    async def _initialize_startup(self):
         await self.client.wait_until_ready()
         await initialize_cache(self.client)
 
@@ -32,7 +32,8 @@ async def initialize_cache(client):
             var_config.broadcastchs[str(guild.id)] = {}
         var_config.practicemap[str(guild.id)] = {}
 
-    logging.log(level=logging.INFO, msg=f'Initial loading of appliedchs, broadcastchs, practicemap finished for all guilds')
+    logging.log(level=logging.INFO, msg=f'Initial loading of appliedchs, broadcastchs, practicemap finished for all '
+                                        f'guilds')
 
 
 def setup(client):

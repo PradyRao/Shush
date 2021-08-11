@@ -52,10 +52,10 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
             # get the list of all excused members
             excused_members = var_config.practicemap[str(voice_state.channel.guild.id)][str(voice_state.channel.id) + 'excused']
             # for each user in that voice channel
-            for user in voice_state.channel.members:
+            for member in voice_state.channel.members:
                 # if the user is excused, re-mute them
-                if user.id in excused_members:
-                    await user.edit(mute=True)
+                if member.id in excused_members:
+                    await member.edit(mute=True)
 
         # reset excused in practicemap as well - part 2/2
         if str(voice_state.channel.id) + 'piece' in var_config.practicemap[str(voice_state.channel.guild.id)].keys():
@@ -65,9 +65,10 @@ async def process_leave_end(member: discord.Member, voice_state: discord.VoiceSt
         logging.log(level=logging.INFO, msg=f'resetting bit rate and user limit for channel {voice_state.channel.name} id: {voice_state.channel.id}')
         await voice_state.channel.edit(bitrate=var_config.bit_tier[voice_state.channel.guild.premium_tier], user_limit=0)
 
-    # check if channel's excused key exists in practicemap, and if the user that left was excused in the voice channel they were in
+    # check if channel's excused key exists in practicemap, and if the user that left was excused in the voice
+    # channel they were in
     elif str(voice_state.channel.id) + 'excused' in var_config.practicemap[str(voice_state.channel.guild.id)].keys() and \
-            str(member.id) in var_config.practicemap[str(voice_state.channel.guild.id)][str(voice_state.channel.id) + 'excused']:
+            member.id in var_config.practicemap[str(voice_state.channel.guild.id)][str(voice_state.channel.id) + 'excused']:
         logging.log(level=logging.INFO, msg=f'excused user {member.name}#{member.discriminator} id:{member.id} left. removing entry from voice channel {voice_state.channel.name} id:'
                                             f' {voice_state.channel.id}')
 

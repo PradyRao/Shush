@@ -54,7 +54,7 @@ async def end_session(ctx: discord.ext.commands.Context):
     if not await general_check.voice_channel_command_check(ctx):
         return
     # check if user that executed this command is the one that is practicing
-    elif str(ctx.author.voice.channel.id) in var_config.practicemap[str(ctx.guild.id)].keys() and var_config.practicemap[str(ctx.guild.id)][\
+    elif str(ctx.author.voice.channel.id) in var_config.practicemap[str(ctx.guild.id)].keys() and var_config.practicemap[str(ctx.guild.id)][
             str(ctx.author.voice.channel.id)] != str(ctx.author.id):
         await ctx.reply('you are not practicing in this voice channel')
     else:

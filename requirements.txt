@@ -1,2 +1,5 @@
-discord.py >= 1.6.0
+discord.py >= 1.7.0
 pymongo >= 3.11.3
+pymongo[srv] >= 3.11.3
+APScheduler >= 3.7.0
+PyNaCl >= 1.4.0
