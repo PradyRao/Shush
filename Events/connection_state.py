@@ -17,6 +17,10 @@ class Startup(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         logging.log(level=logging.INFO, msg=f'logged in as {self.client.user.name}#{self.client.user.discriminator}')
+        # set the bot's profile picture
+        with open("./Resources/IMG_1553.jpg", "rb") as image_file:  # rb = read bytes I believe
+            image = image_file.read()  # get bytes from file-like object
+        await self.client.user.edit(avatar=image)
         # set the bot visibility status and add in a game-status
         await self.client.change_presence(status=discord.Status.online, activity=discord.Game(name=f'{self.client.command_prefix}help for more info'))
 
